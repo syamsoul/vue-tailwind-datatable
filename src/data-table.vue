@@ -225,7 +225,7 @@ defineExpose({
                 <input v-model="search" type="text" @keyup.enter="reload()" placeholder="Search / Filter" autocomplete="off" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-xs" />
             </div>
         </div>
-        <div class="overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mb-3">
+        <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mb-3">
             <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-gray-50">
                     <tr>
