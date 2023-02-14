@@ -34,10 +34,14 @@ const currentItemPosition = computed(() => {
             cip.end = ajaxData.value.data.current_item_position_end;
         }
     }else{
-        cip.start = ((currentPage.value - 1) * itemsPerPage.value) + 1;
-        cip.start = cip.start < 0 ? 0 : cip.start;
-        cip.end = currentPage.value * itemsPerPage.value;
-        if(cip.end > totalFilteredItemCount.value) cip.end = totalFilteredItemCount.value;
+        if(itemsPerPage.value > 0){
+            cip.start = ((currentPage.value - 1) * itemsPerPage.value) + 1;
+            cip.start = cip.start < 0 ? 0 : cip.start;
+            cip.end = currentPage.value * itemsPerPage.value;
+            if(cip.end > totalFilteredItemCount.value) cip.end = totalFilteredItemCount.value;
+        }else{
+            cip.end = totalFilteredItemCount.value;
+        }
     }
 
     return cip;
@@ -102,7 +106,7 @@ const sortFinal = computed(() => {
     return s;
 });
 
-const maxPage = computed(() => totalFilteredItemCount.value==null ? 1 : Math.ceil(totalFilteredItemCount.value / itemsPerPage.value));
+const maxPage = computed(() => (itemsPerPage.value == -1) ? 1 : (totalFilteredItemCount.value==null ? 1 : Math.ceil(totalFilteredItemCount.value / itemsPerPage.value)) );
 
 const changePage = function(changeValue)
 {
@@ -217,7 +221,14 @@ defineExpose({
         <div v-if="allowedItemsPerPage !== null || is_search_enable" class="block md:flex md:flex-1 md:items-center md:justify-between mb-3">
             <div v-if="allowedItemsPerPage !== null" class="text-xs text-center md:text-left mb-2 md:mb-0">
                 <select v-model="itemsPerPage" class="mr-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-xs">
-                    <option v-for="(item, index) in allowedItemsPerPage" :value="item" :key="index">{{ item }}</option>
+                    <option v-for="(item, index) in allowedItemsPerPage" :value="item" :key="index">
+                        <template v-if="item == -1">
+                            All
+                        </template>
+                        <template v-else>
+                            {{ item }}
+                        </template>
+                    </option>
                 </select>
                 <span class="text-gray-600">Items Per Page</span>
             </div>
