@@ -202,6 +202,8 @@ watch(search, function(){
 
 onMounted(()=>{
     if(itemsPerPage.value === null) itemsPerPage.value = props.defaultItemsPerPage ?? (Array.isArray(props.allowedItemsPerPage) ? (props.allowedItemsPerPage[0] ?? 10) : 10);
+    sort.desc = sortFinal.value.desc;
+    sort.by = sortFinal.value.by;
 
     if(props.is_ssp_mode){
         fetchData();
