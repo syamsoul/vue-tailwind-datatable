@@ -283,9 +283,11 @@ defineExpose({
                             <tr v-if="is_ssp_mode || ((index+1) >= currentItemPosition.start && index < currentItemPosition.end)">
                                 <td v-for="(e_col, index2) in columnsFinal" class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" :class="e_col.class" :key="index2">
                                     <template v-if="Array.isArray(e_data[e_col.db])">
-                                        <template v-for="(slot) in e_data[e_col.db]">
-                                            <slot :name="slot.slotName" :data="slot"></slot>
-                                        </template>
+                                        <div class="flex items-center">
+                                            <template v-for="(slot) in e_data[e_col.db]">
+                                                <slot :name="slot.slotName" :data="slot"></slot>
+                                            </template>
+                                        </div>
                                     </template>
                                     <template v-else>
                                         {{ e_data[e_col.db] }}
