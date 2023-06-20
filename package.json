@@ -1,6 +1,6 @@
 {
   "name": "vue-tailwind-datatable",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "DataTable component for Vue3 using TailwindCSS",
   "main": "dist/data-table.ssr.js",
   "browser": "dist/data-table.esm.js",
