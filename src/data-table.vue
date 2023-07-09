@@ -131,6 +131,7 @@ const reload = function()
 const fetchData = function(execAfterSuccess=function(){})
 {
     if(!props.is_ssp_mode) return false;
+    if (is_loading.value) return false;
     if(typeof props.url !== 'string') throw new Error('`url` is required.');
 
     is_loading.value = true;
