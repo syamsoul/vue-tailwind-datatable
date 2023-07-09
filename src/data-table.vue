@@ -23,6 +23,7 @@ const itemsPerPage = ref(null);
 const sort = reactive({by:null, desc:false});
 const search = ref('');
 const is_loading = ref(true);
+const is_fetching = ref(false);
 const is_failed = ref(false);
 
 const currentItemPosition = computed(() => {
@@ -131,10 +132,11 @@ const reload = function()
 const fetchData = function(execAfterSuccess=function(){})
 {
     if(!props.is_ssp_mode) return false;
-    if (is_loading.value) return false;
+    if (is_fetching.value) return false;
     if(typeof props.url !== 'string') throw new Error('`url` is required.');
 
     is_loading.value = true;
+    is_fetching.value = true;
     is_failed.value = false;
 
     let params = {
@@ -158,6 +160,7 @@ const fetchData = function(execAfterSuccess=function(){})
         is_failed.value = true;
     }).then(function(){
         is_loading.value = false;
+        is_fetching.value = false;
     });
 }
 
