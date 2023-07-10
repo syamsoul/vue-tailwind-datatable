@@ -8,7 +8,6 @@ const props = defineProps({
     allowedItemsPerPage: {type:Array, default:null},
     is_ssp_mode: {type:Boolean, default:false},
     url: {type:String, default:null},
-    params: {type:[Array, Object], default:{}},
     is_search_enable: {type:Boolean, default:false},
     defaultItemsPerPage: {type:Number, default:null},
     defaultSortBy: {type:[String, Number], default:null},
@@ -23,7 +22,7 @@ const totalFilteredItemCount = ref(null);
 const itemsPerPage = ref(null);
 const sort = reactive({by:null, desc:false});
 const search = ref('');
-const extraParams = computed(() => props.params);
+const extraParams = ref({});
 const is_loading = ref(true);
 const is_fetching = ref(false);
 const is_failed = ref(false);
@@ -186,6 +185,11 @@ const sorting = function(db_name)
     return true;
 }
 
+const setParams = function (params)
+{
+    extraParams.value = params;
+}
+
 watch(itemsPerPage, function(){
     if(currentPage.value > maxPage.value) currentPage.value = maxPage.value;
     reload();
@@ -227,6 +231,7 @@ onMounted(()=>{
 
 defineExpose({
     fetchData,
+    setParams,
 });
 </script>
 
