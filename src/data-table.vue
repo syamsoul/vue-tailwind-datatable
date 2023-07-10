@@ -23,6 +23,7 @@ const totalFilteredItemCount = ref(null);
 const itemsPerPage = ref(null);
 const sort = reactive({by:null, desc:false});
 const search = ref('');
+const extraParams = computed(() => props.params);
 const is_loading = ref(true);
 const is_fetching = ref(false);
 const is_failed = ref(false);
@@ -149,7 +150,7 @@ const fetchData = function(options={})
 
     if(search.value.length > 0) params.search = search.value;
 
-    params = {...params, ...props.params};
+    params = {...params, ...extraParams.value};
 
     if (typeof options.params !== 'undefined') {
         params = {...params, ...options.params};
