@@ -293,7 +293,7 @@ defineExpose({
                                             </template>
                                         </div>
                                     </template>
-                                    <template v-else-if="typeof e_data[e_col.db] === 'string' && e_data[e_col.db].substring(0,5) === 'html:'">
+                                    <template v-else-if="e_data[e_col.db].toString().substring(0,5) === 'html:'">
                                         <span v-html="e_data[e_col.db].substring(5)"></span>
                                     </template>
                                     <template v-else>
