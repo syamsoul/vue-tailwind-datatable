@@ -8,6 +8,7 @@ const props = defineProps({
     allowedItemsPerPage: {type:Array, default:null},
     is_ssp_mode: {type:Boolean, default:false},
     url: {type:String, default:null},
+    params: {type:[Array, Object], default:{}},
     is_search_enable: {type:Boolean, default:false},
     defaultItemsPerPage: {type:Number, default:null},
     defaultSortBy: {type:[String, Number], default:null},
@@ -147,6 +148,8 @@ const fetchData = function(options={})
     };
 
     if(search.value.length > 0) params.search = search.value;
+
+    params = {...params, ...props.params};
 
     if (typeof options.params !== 'undefined') {
         params = {...params, ...options.params};
