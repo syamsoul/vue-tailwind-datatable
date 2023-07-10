@@ -129,7 +129,7 @@ const reload = function()
     }
 }
 
-const fetchData = function(execAfterSuccess=function(){})
+const fetchData = function(options={})
 {
     if(!props.is_ssp_mode) return false;
     if (is_fetching.value) return false;
@@ -148,13 +148,17 @@ const fetchData = function(execAfterSuccess=function(){})
 
     if(search.value.length > 0) params.search = search.value;
 
+    if (typeof options.params !== 'undefined') {
+        params = {...params, ...options.params};
+    }
+
     axios.get(props.url, {
         params,
     }).then(function(response){
         ajaxData.value = response.data;
         totalItemCount.value = response.data.data.total_item_count;
         totalFilteredItemCount.value = response.data.data.total_filtered_item_count;
-        if(typeof execAfterSuccess === 'function') execAfterSuccess(response);
+        if(typeof options.success === 'function') options.success(response);
     }).catch((e)=>{
         console.log(e);
         is_failed.value = true;
