@@ -140,16 +140,7 @@ const fetchData = function(options={})
     is_fetching.value = true;
     is_failed.value = false;
 
-    let params = {
-        page: currentPage.value,
-        itemsPerPage: itemsPerPage.value,
-        sortBy: sortFinal.value.by,
-        sortDesc: sortFinal.value.desc ? 'true' : 'false',
-    };
-
-    if(search.value.length > 0) params.search = search.value;
-
-    params = {...params, ...extraParams.value};
+    let params = getParams();
 
     if (typeof options.params !== 'undefined') {
         params = {...params, ...options.params};
@@ -188,6 +179,42 @@ const sorting = function(db_name)
 const setParams = function (params)
 {
     extraParams.value = params;
+}
+
+const getParams = function (override = null, is_return_url_params = false)
+{
+    let params = {
+        page: currentPage.value,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: sortFinal.value.by,
+        sortDesc: sortFinal.value.desc ? 'true' : 'false',
+    };
+
+    if(search.value.length > 0) params.search = search.value;
+
+    params = {...params, ...extraParams.value};
+
+    if (typeof override === 'function') {
+        params = override(params);
+    }
+
+    if (is_return_url_params) {
+        let url_params = {};
+        for (let key in params) {
+            let v = params[key];
+            if (Array.isArray(v) ){
+                for (let i in v) {
+                    url_params[`${key}[${i}]`] = v[i];
+                }
+            } else {
+                url_params[key] = v;
+            }
+        }
+
+        return (new URLSearchParams(url_params)).toString();
+    }
+
+    return params;
 }
 
 watch(itemsPerPage, function(){
@@ -232,6 +259,7 @@ onMounted(()=>{
 defineExpose({
     fetchData,
     setParams,
+    getParams,
 });
 </script>
 
