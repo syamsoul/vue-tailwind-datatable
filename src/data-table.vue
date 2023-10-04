@@ -12,7 +12,7 @@ const props = defineProps({
     defaultItemsPerPage: {type:Number, default:null},
     defaultSortBy: {type:[String, Number], default:null},
     defaultSortDesc: {type:Boolean, default:false},
-    defaultParams: {type:Object, default:{}},
+    is_fetch_on_init: {type:Boolean, default:true},
 });
 
 const ajaxData = ref(null);
@@ -250,8 +250,7 @@ onMounted(() => {
     sort.by = sortFinal.value.by;
 
     if (props.is_ssp_mode) {
-        setParams(props.defaultParams);
-        fetchData();
+        if (props.is_fetch_on_init) fetchData();
     } else {
         is_loading.value = false;
         totalItemCount.value = totalFilteredItemCount.value = props.data.length;
