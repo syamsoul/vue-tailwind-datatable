@@ -327,7 +327,12 @@ defineExpose({
                         <template v-for="(e_data, index) in dataFinal" :key="index">
                             <tr v-if="is_ssp_mode || ((index+1) >= currentItemPosition.start && index < currentItemPosition.end)">
                                 <td v-for="(e_col, index2) in columnsFinal" class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" :class="e_col.class" :key="index2">
-                                    <template v-if="Array.isArray(e_data[e_col.db])">
+                                    <template v-if="(typeof e_data[e_col.db] === 'object' && !(Array.isArray(e_data[e_col.db]) || e_data[e_col.db] === null))">
+                                        <div class="flex items-center">
+                                            <slot :name="e_data[e_col.db].slotName" :data="e_data[e_col.db]"></slot>
+                                        </div>
+                                    </template>
+                                    <template v-else-if="Array.isArray(e_data[e_col.db])">
                                         <div class="flex items-center">
                                             <template v-for="(slot) in e_data[e_col.db]">
                                                 <slot :name="slot.slotName" :data="slot"></slot>
