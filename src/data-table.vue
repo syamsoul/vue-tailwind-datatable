@@ -27,6 +27,7 @@ const extraParams = ref({});
 const is_loading = ref(true);
 const is_fetching = ref(false);
 const is_failed = ref(false);
+const is_initiated = ref(false);
 
 const currentItemPosition = computed(() => {
     let cip = {start:1, end:1};
@@ -218,12 +219,16 @@ const getParams = function (override = null, is_return_url_params = false)
     return params;
 }
 
-watch(itemsPerPage, function(){
+watch(itemsPerPage, () => {
+    if(! is_initiated.value) return;
+
     if(currentPage.value > maxPage.value) currentPage.value = maxPage.value;
     reload();
 });
 
-watch(sort, function(){
+watch(sort, () => {
+    if(! is_initiated.value) return;
+
     reload();
 });
 
@@ -255,6 +260,8 @@ onMounted(() => {
         is_loading.value = false;
         totalItemCount.value = totalFilteredItemCount.value = props.data.length;
     }
+
+    is_initiated.value = true;
 });
 
 defineExpose({
