@@ -12,6 +12,7 @@ const props = defineProps({
     defaultItemsPerPage: {type:Number, default:null},
     defaultSortBy: {type:[String, Number], default:null},
     defaultSortDesc: {type:Boolean, default:false},
+    defaultParams: {type:Object, default:{}},
 });
 
 const ajaxData = ref(null);
@@ -132,9 +133,9 @@ const reload = function()
 
 const fetchData = function(options={})
 {
-    if(!props.is_ssp_mode) return false;
+    if (!props.is_ssp_mode) return false;
     if (is_fetching.value) return false;
-    if(typeof props.url !== 'string') throw new Error('`url` is required.');
+    if (typeof props.url !== 'string') throw new Error('`url` is required.');
 
     is_loading.value = true;
     is_fetching.value = true;
@@ -243,14 +244,15 @@ watch(search, function(){
     }
 });
 
-onMounted(()=>{
-    if(itemsPerPage.value === null) itemsPerPage.value = props.defaultItemsPerPage ?? (Array.isArray(props.allowedItemsPerPage) ? (props.allowedItemsPerPage[0] ?? 10) : 10);
+onMounted(() => {
+    if (itemsPerPage.value === null) itemsPerPage.value = props.defaultItemsPerPage ?? (Array.isArray(props.allowedItemsPerPage) ? (props.allowedItemsPerPage[0] ?? 10) : 10);
     sort.desc = sortFinal.value.desc;
     sort.by = sortFinal.value.by;
 
-    if(props.is_ssp_mode){
+    if (props.is_ssp_mode) {
+        setParams(props.defaultParams);
         fetchData();
-    }else{
+    } else {
         is_loading.value = false;
         totalItemCount.value = totalFilteredItemCount.value = props.data.length;
     }
