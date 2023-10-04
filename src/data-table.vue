@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, watch, reactive } from 'vue';
+import { computed, ref, onMounted, watch, reactive, nextTick } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -249,7 +249,7 @@ watch(search, function(){
     }
 });
 
-onMounted(() => {
+onMounted(async () => {
     if (itemsPerPage.value === null) itemsPerPage.value = props.defaultItemsPerPage ?? (Array.isArray(props.allowedItemsPerPage) ? (props.allowedItemsPerPage[0] ?? 10) : 10);
     sort.desc = sortFinal.value.desc;
     sort.by = sortFinal.value.by;
@@ -260,6 +260,8 @@ onMounted(() => {
         is_loading.value = false;
         totalItemCount.value = totalFilteredItemCount.value = props.data.length;
     }
+
+    await nextTick();
 
     is_initiated.value = true;
 });
