@@ -371,7 +371,7 @@ defineExpose({
         <div class="block md:flex md:flex-1 md:items-center md:justify-between text-center md:text-left">
             <div class="hidden min-[420px]:block mb-2 md:mb-0">
                 <p class="text-xs lg:text-sm text-gray-700">
-                    Showing <span class="font-medium">{{ currentItemPosition.start }}</span> to <span class="font-medium">{{ currentItemPosition.end }}</span> of <span class="font-medium">{{ totalFilteredItemCount }}</span> results <span v-if="search.length > 0">(filtered from <span class="font-medium">{{ totalItemCount }}</span> items)</span>
+                    Showing <span class="font-medium">{{ currentItemPosition.start }}</span> to <span class="font-medium">{{ currentItemPosition.end }}</span> of <span class="font-medium">{{ totalFilteredItemCount }}</span> results <span v-if="totalFilteredItemCount !== totalItemCount">(filtered from <span class="font-medium">{{ totalItemCount }}</span> items)</span>
                 </p>
             </div>
             <div>
