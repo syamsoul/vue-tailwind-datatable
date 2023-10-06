@@ -3,17 +3,17 @@ import { computed, ref, onMounted, watch, reactive, nextTick } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
-    columns: {type:[Array, Object], default:()=>[]},
-    data: {type:Array, default:()=>[]},
-    allowedItemsPerPage: {type:Array, default:null},
-    is_ssp_mode: {type:Boolean, default:false},
-    url: {type:String, default:null},
-    is_search_enable: {type:Boolean, default:false},
-    is_count_enable: {type:Boolean, default:true},
-    defaultItemsPerPage: {type:Number, default:null},
-    defaultSortBy: {type:[String, Number], default:null},
-    defaultSortDesc: {type:Boolean, default:false},
-    is_fetch_on_init: {type:Boolean, default:true},
+    columns: { type: [Array, Object], default: () => [] },
+    data: { type: Array, default: () => [] },
+    allowedItemsPerPage: { type: Array, default: null },
+    is_ssp_mode: { type: Boolean, default: false },
+    url: { type: String, default: null },
+    is_search_enable: { type: Boolean, default: false },
+    is_count_enable: { type: Boolean, default: true },
+    defaultItemsPerPage: { type: Number, default: null },
+    defaultSortBy: { type: [String, Number], default: null },
+    defaultSortDesc: { type: Boolean, default: false },
+    is_fetch_on_init: { type: Boolean, default: true },
 });
 
 const ajaxData = ref(null);
@@ -22,7 +22,7 @@ const currentPage = ref(1);
 const totalItemCount = ref(null);
 const totalFilteredItemCount = ref(null);
 const itemsPerPage = ref(null);
-const sort = reactive({by:null, desc:false});
+const sort = reactive({ by: null, desc: false});
 const search = ref('');
 const extraParams = ref({});
 const is_loading = ref(true);
@@ -31,20 +31,20 @@ const is_failed = ref(false);
 const is_initiated = ref(false);
 
 const currentItemPosition = computed(() => {
-    let cip = {start:1, end:1};
+    let cip = { start: 1, end: 1 };
 
-    if(props.is_ssp_mode){
-        if(ajaxData.value !== null){
+    if (props.is_ssp_mode) {
+        if (ajaxData.value !== null) {
             cip.start = ajaxData.value.data.current_item_position_start;
             cip.end = ajaxData.value.data.current_item_position_end;
         }
-    }else{
-        if(itemsPerPage.value > 0){
+    } else {
+        if (itemsPerPage.value > 0) {
             cip.start = ((currentPage.value - 1) * itemsPerPage.value) + 1;
             cip.start = cip.start < 0 ? 0 : cip.start;
             cip.end = currentPage.value * itemsPerPage.value;
-            if(cip.end > totalFilteredItemCount.value) cip.end = totalFilteredItemCount.value;
-        }else{
+            if (cip.end > totalFilteredItemCount.value) cip.end = totalFilteredItemCount.value;
+        } else {
             cip.end = totalFilteredItemCount.value;
         }
     }
@@ -54,13 +54,14 @@ const currentItemPosition = computed(() => {
 
 const columnsFinal = computed(() => {
     let newColumns = [];
-    for(let i in props.columns){
+    for (let i in props.columns) {
         let c = props.columns[i];
 
-        if(typeof c !== 'object') newColumns.push({label:c, db:i, sortable:true, class:[]});
-        else{
-            if(typeof c.sortable === 'undefined') c.sortable = true;
-            if(typeof c.class === 'undefined') c.class = [];
+        if (typeof c !== 'object') {
+            newColumns.push({label: c, db: i, sortable: true, class: []});
+        } else {
+            if (typeof c.sortable === 'undefined') c.sortable = true;
+            if (typeof c.class === 'undefined') c.class = [];
             newColumns.push(c);
         }
     }
@@ -70,21 +71,21 @@ const columnsFinal = computed(() => {
 const dataFinal = computed(() => {
     let dt = [];
 
-    if(props.is_ssp_mode){
-        if(ajaxData.value !== null){
+    if (props.is_ssp_mode) {
+        if (ajaxData.value !== null) {
             dt = ajaxData.value.data.items;
         }
-    }else{
-        dt = props.data.sort((a,b)=>{
+    } else {
+        dt = props.data.sort((a,b) => {
             const by = sortFinal.value.by;
 
-            if(sortFinal.value.desc) return (a[by] < b[by]) ? 1 : ((b[by] < a[by]) ? -1 : 0);
+            if (sortFinal.value.desc) return (a[by] < b[by]) ? 1 : ((b[by] < a[by]) ? -1 : 0);
             return (a[by] > b[by]) ? 1 : ((b[by] > a[by]) ? -1 : 0);
         });
 
-        if(search.value.length > 0) dt = dt.filter((item)=>{
-            for(let key in item){
-                if(item[key].toString().toLowerCase().search(search.value.toLowerCase()) >= 0) return true;
+        if (search.value.length > 0) dt = dt.filter((item) => {
+            for (let key in item) {
+                if (item[key].toString().toLowerCase().search(search.value.toLowerCase()) >= 0) return true;
             }
             return false;
         });
@@ -95,17 +96,17 @@ const dataFinal = computed(() => {
 
 const sortFinal = computed(() => {
     let s = {
-        by:props.defaultSortBy, 
-        desc:props.defaultSortDesc,
+        by: props.defaultSortBy, 
+        desc: props.defaultSortDesc,
     };
     
-    if(typeof sort.by === 'string'){
+    if (typeof sort.by === 'string') {
         if (columnsFinal.value.some(e => e.db === sort.by)) {
             s.by = sort.by;
             s.desc = sort.desc;
         }
-    }else{
-        if(s.by === null) s.by = columnsFinal.value[0].db;
+    } else {
+        if (s.by === null) s.by = columnsFinal.value[0].db;
     }
 
     return s;
@@ -115,11 +116,11 @@ const maxPage = computed(() => (itemsPerPage.value == -1) ? 1 : (totalFilteredIt
 
 const changePage = function(changeValue)
 {
-    if(is_loading.value) return false;
+    if (is_loading.value) return false;
 
     let nextValue = currentPage.value + changeValue;
 
-    if(nextValue < 1 || nextValue > maxPage.value) return false;
+    if (nextValue < 1 || nextValue > maxPage.value) return false;
 
     currentPage.value = nextValue;
 
@@ -128,12 +129,12 @@ const changePage = function(changeValue)
 
 const reload = function()
 {
-    if(props.is_ssp_mode){
+    if (props.is_ssp_mode) {
         fetchData();
     }
 }
 
-const fetchData = function(options={})
+const fetchData = function(options = {})
 {
     if (!props.is_ssp_mode) return false;
     if (is_fetching.value) return false;
@@ -151,15 +152,15 @@ const fetchData = function(options={})
 
     axios.get(props.url, {
         params,
-    }).then(function(response){
+    }).then((response) => {
         ajaxData.value = response.data;
         totalItemCount.value = response.data.data.total_item_count;
         totalFilteredItemCount.value = response.data.data.total_filtered_item_count;
-        if(typeof options.success === 'function') options.success(response);
-    }).catch((e)=>{
+        if (typeof options.success === 'function') options.success(response);
+    }).catch((e) => {
         console.log(e);
         is_failed.value = true;
-    }).then(function(){
+    }).then(() => {
         is_loading.value = false;
         is_fetching.value = false;
     });
@@ -168,10 +169,10 @@ const fetchData = function(options={})
 const sorting = function(db_name)
 {
     let the_column = columnsFinal.value.find(e => e.db == db_name);
-    if(the_column === undefined) return false;
-    if(!the_column.sortable) return false;
+    if (the_column === undefined) return false;
+    if (!the_column.sortable) return false;
 
-    if(sortFinal.value.by == db_name) sort.desc = !sort.desc;
+    if (sortFinal.value.by == db_name) sort.desc = !sort.desc;
     else sort.desc = false;
 
     sort.by = db_name;
@@ -179,12 +180,12 @@ const sorting = function(db_name)
     return true;
 }
 
-const setParams = function (params)
+const setParams = function(params)
 {
     extraParams.value = params;
 }
 
-const getParams = function (override = null, is_return_url_params = false)
+const getParams = function(override = null, is_return_url_params = false)
 {
     let params = {
         page: currentPage.value,
@@ -193,7 +194,7 @@ const getParams = function (override = null, is_return_url_params = false)
         sortDesc: sortFinal.value.desc ? 'true' : 'false',
     };
 
-    if(search.value.length > 0) params.search = search.value;
+    if (search.value.length > 0) params.search = search.value;
 
     params = {...params, ...extraParams.value};
 
@@ -221,30 +222,32 @@ const getParams = function (override = null, is_return_url_params = false)
 }
 
 watch(itemsPerPage, () => {
-    if(! is_initiated.value) return;
+    if (! is_initiated.value) return;
 
-    if(currentPage.value > maxPage.value) currentPage.value = maxPage.value;
+    if (currentPage.value > maxPage.value) currentPage.value = maxPage.value;
     reload();
 });
 
 watch(sort, () => {
-    if(! is_initiated.value) return;
+    if (! is_initiated.value) return;
 
     reload();
 });
 
 let searchTimeout = null;
-watch(search, function(){
-    if(props.is_ssp_mode){
+watch(search, () => {
+    if (props.is_ssp_mode) {
         is_loading.value = true;
-        if(searchTimeout !== null) clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(()=>{
+
+        if (searchTimeout !== null) clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(() => {
             currentPage.value = 1;
-            fetchData(()=>{
+            fetchData(() => {
                 searchTimeout = null;
             });
         }, 800);
-    }else{
+    } else {
         currentPage.value = 1;
         totalFilteredItemCount.value = dataFinal.value.length;
     }
