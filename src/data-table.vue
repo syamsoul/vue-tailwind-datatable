@@ -118,11 +118,13 @@ const changePage = function(changeValue)
 {
     if (is_loading.value) return false;
 
-    let nextValue = currentPage.value + changeValue;
+    if (changeValue < 0) {
+        if (currentPage.value <= 1) return false;
+    } else if (changeValue > 0) {
+        if (!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage))) return false;
+    }
 
-    if (nextValue < 1 || !(nextValue <= maxPage.value || (!props.is_count_enable && dataFinal.value.length >= itemsPerPage.value))) return false;
-
-    currentPage.value = nextValue;
+    currentPage.value = currentPage.value + changeValue;
 
     reload();
 }
@@ -380,18 +382,25 @@ defineExpose({
             </div>
             <div>
                 <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                    <a @click="changePage(-1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(currentPage<=1 || is_loading)}">
+                    <a @click="changePage(-1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(currentPage <= 1 || is_loading)}">
                         <span class="sr-only">Previous</span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
                         </svg>
                     </a>
-                    <span v-if="is_count_enable">
-                        <select v-model="currentPage" @change="reload()" class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center" :disabled="dataFinal.length <= 0 || is_loading">
-                            <template v-for="n in maxPage" :key="n">
-                                <option :value="n">{{ n }}</option>
-                            </template>
-                        </select>
+                    <span>
+                        <template v-if="is_count_enable">
+                            <select v-model="currentPage" @change="reload()" class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center" :disabled="dataFinal.length <= 0 || is_loading">
+                                <template v-for="n in maxPage" :key="n">
+                                    <option :value="n">{{ n }}</option>
+                                </template>
+                            </select>
+                        </template>
+                        <template v-else>
+                            <span class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center">
+                                {{ currentPage }}
+                            </span>
+                        </template>
                     </span>
                     <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage)) || is_loading)}">
                         <span class="sr-only">Next</span>
