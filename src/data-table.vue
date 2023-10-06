@@ -114,14 +114,26 @@ const sortFinal = computed(() => {
 
 const maxPage = computed(() => (itemsPerPage.value == -1) ? 1 : (totalFilteredItemCount.value==null ? 1 : Math.ceil(totalFilteredItemCount.value / itemsPerPage.value)) );
 
+const canPrevPage = computed(() => {
+    return currentPage.value > 1;
+});
+
+const canNextPage = computed(() => {
+    if (props.is_ssp_mode) {
+        return (currentPage.value < maxPage.value || (!props.is_count_enable && dataFinal.value.length >= itemsPerPage.value));
+    } else {
+        return currentPage.value < maxPage.value;
+    }
+});
+
 const changePage = function(changeValue)
 {
     if (is_loading.value) return false;
 
     if (changeValue < 0) {
-        if (currentPage.value <= 1) return false;
+        if (!canPrevPage.value) return false;
     } else if (changeValue > 0) {
-        if (!(currentPage.value < maxPage.value || (!props.is_count_enable && dataFinal.value.length >= itemsPerPage.value))) return false;
+        if (!canNextPage.value) return false;
     }
 
     currentPage.value = currentPage.value + changeValue;
@@ -382,7 +394,7 @@ defineExpose({
             </div>
             <div>
                 <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                    <a @click="changePage(-1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(currentPage <= 1 || is_loading)}">
+                    <a @click="changePage(-1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!canPrevPage || is_loading)}">
                         <span class="sr-only">Previous</span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
@@ -400,7 +412,7 @@ defineExpose({
                             <input type="number" v-model="currentPage" @change="reload()" class="w-20 relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center" />
                         </template>
                     </span>
-                    <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage)) || is_loading)}">
+                    <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!canNextPage || is_loading)}">
                         <span class="sr-only">Next</span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clip-rule="evenodd" />
