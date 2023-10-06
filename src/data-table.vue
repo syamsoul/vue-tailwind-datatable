@@ -397,9 +397,7 @@ defineExpose({
                             </select>
                         </template>
                         <template v-else>
-                            <span class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center">
-                                {{ currentPage }}
-                            </span>
+                            <input type="number" v-model="currentPage" @change="reload()" class="w-20 relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center" />
                         </template>
                     </span>
                     <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage)) || is_loading)}">
