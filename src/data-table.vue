@@ -96,7 +96,7 @@ const dataFinal = computed(() => {
 
 const sortFinal = computed(() => {
     let s = {
-        by: props.defaultSortBy, 
+        by: props.defaultSortBy,
         desc: props.defaultSortDesc,
     };
     
@@ -120,7 +120,7 @@ const changePage = function(changeValue)
 
     let nextValue = currentPage.value + changeValue;
 
-    if (nextValue < 1 || nextValue > maxPage.value) return false;
+    if (nextValue < 1 || !(nextValue <= maxPage.value || (!props.is_count_enable && dataFinal.value.length >= itemsPerPage.value))) return false;
 
     currentPage.value = nextValue;
 
@@ -154,8 +154,8 @@ const fetchData = function(options = {})
         params,
     }).then((response) => {
         ajaxData.value = response.data;
-        totalItemCount.value = response.data.data.total_item_count;
-        totalFilteredItemCount.value = response.data.data.total_filtered_item_count;
+        totalItemCount.value = response.data.data.total_item_count ?? 0;
+        totalFilteredItemCount.value = response.data.data.total_filtered_item_count ?? 0;
         if (typeof options.success === 'function') options.success(response);
     }).catch((e) => {
         console.log(e);
@@ -386,14 +386,14 @@ defineExpose({
                             <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
                         </svg>
                     </a>
-                    <span>
+                    <span v-if="is_count_enable">
                         <select v-model="currentPage" @change="reload()" class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 appearance-none bg-none cursor-pointer text-center" :disabled="dataFinal.length <= 0 || is_loading">
                             <template v-for="n in maxPage" :key="n">
                                 <option :value="n">{{ n }}</option>
                             </template>
                         </select>
                     </span>
-                    <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(currentPage>=maxPage || is_loading)}">
+                    <a @click="changePage(+1)" href="javascript:void(0);" class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20" :class="{'opacity-40 cursor-default':(!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage)) || is_loading)}">
                         <span class="sr-only">Next</span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clip-rule="evenodd" />
