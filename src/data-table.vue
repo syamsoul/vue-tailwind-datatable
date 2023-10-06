@@ -121,7 +121,7 @@ const changePage = function(changeValue)
     if (changeValue < 0) {
         if (currentPage.value <= 1) return false;
     } else if (changeValue > 0) {
-        if (!(currentPage < maxPage || (!is_count_enable && dataFinal.length >= itemsPerPage))) return false;
+        if (!(currentPage.value < maxPage.value || (!props.is_count_enable && dataFinal.value.length >= itemsPerPage.value))) return false;
     }
 
     currentPage.value = currentPage.value + changeValue;
